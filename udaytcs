@@ -12,13 +12,13 @@ import java.util.List;
 import com.fresco.jdbc.code.util.DbUtil;
 
 public class DbOperations {
-	Connection con;
+Connection con;
 	
 	public static final String INSERT_SUBJECT = "INSERT INTO subject(name)VALUES(?)";
 	public static final String GET_ID_SUBJECT = "SELECT id,name FROM subject WHERE id =?";
 	public static final String GET_ALL_SUBJECT = "SELECT id,name FROM subject";
-	public static final String INSERT_STUDENT = "INSERT INTO Student(name,score,id) VALUES(?,?,id)SELECT id FROM subject WHERE name =\"?\"";
-	public static final String GET_ID_STUDENT = "SELECt is,student_name,score,subject_id FROM student WHERE id =?";
+	public static final String INSERT_STUDENT = "INSERT INTO student(student_name,score,id) VALUES(?,?,id)SELECT id FROM subject WHERE name =\"?\"";
+	public static final String GET_ID_STUDENT = "SELECT id,student_name,score,subject_id FROM student WHERE id =?";
 	public static final String GET_ALL_STUDENT ="SELECT * FROM student";
 	
 	public DbOperations() {
@@ -30,6 +30,8 @@ public class DbOperations {
 		return preparedStatement.execute();
 		
 	}
+
+
 	
 	public ArrayList getSubjectById(int id) throws SQLException {
 		PreparedStatement preparedStatement = this.con.prepareStatement(GET_ID_SUBJECT);
@@ -42,6 +44,7 @@ public class DbOperations {
 		}
 		return arrayList;
 	}
+
 	
 	public ResultSet getAllSubjects() throws SQLException {
 		PreparedStatement preparedStatement = this.con.prepareStatement(GET_ALL_SUBJECT);
@@ -50,7 +53,7 @@ public class DbOperations {
 	}
 	
 	public boolean insertStudent(String student_name, float score, String name) throws SQLException {
-		PreparedStatement preparedStatement = this.con.prepareStatement("INSERT INTO Student(name,score,id) VALUES(?,?,(SELECT id FROM subject WHERE name =?))");
+		PreparedStatement preparedStatement = this.con.prepareStatement("INSERT INTO student(student_name,score,id) VALUES(?,?,(SELECT id FROM subject WHERE name =?))");
 		preparedStatement.setString(1,student_name);
 		preparedStatement.setFloat(2, score);
 		preparedStatement.setString(3, name);
@@ -80,6 +83,7 @@ public class DbOperations {
 		ResultSet resultSet = preparedStatement.executeQuery();
 		return resultSet;
 	}
+	
 }
 
 
@@ -88,8 +92,7 @@ public class DbOperations {
 
 
 
-public class RunningScripts {
-   public void runDbScript() throws Exception {
+  public void runDbScript() throws Exception {
 
       ScriptRunner sr = new ScriptRunner(DbUtil.getConnection());
       Reader reader = new BufferedReader(new FileReader("./db.sql"));
@@ -97,4 +100,3 @@ public class RunningScripts {
       
       
    }
-}

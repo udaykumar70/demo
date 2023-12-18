@@ -12,7 +12,7 @@ import java.util.List;
 import com.fresco.jdbc.code.util.DbUtil;
 
 public class DbOperations {
-Connection con;
+	Connection con;
 	
 	public static final String INSERT_SUBJECT = "INSERT INTO subject(name)VALUES(?)";
 	public static final String GET_ID_SUBJECT = "SELECT id,name FROM subject WHERE id =?";
@@ -22,7 +22,7 @@ Connection con;
 	public static final String GET_ALL_STUDENT ="SELECT * FROM student";
 	
 	public DbOperations() {
-		this.con = DbUtil.getConnection();
+		con = DbUtil.getConnection();
 	}
 	public boolean insertSubject(String name) throws SQLException {
 		PreparedStatement preparedStatement = this.con.prepareStatement(INSERT_SUBJECT);
@@ -53,16 +53,15 @@ Connection con;
 	}
 	
 	public boolean insertStudent(String student_name, float score, String name) throws SQLException {
-		PreparedStatement preparedStatement = this.con.prepareStatement("INSERT INTO student(student_name,score,id) VALUES(?,?,(SELECT id FROM subject WHERE name =?))");
+		PreparedStatement preparedStatement = this.con.prepareStatement("INSERT INTO student(student_name,score,subject_id) VALUES(?,?,(SELECT id FROM subject WHERE name =?))");
 		preparedStatement.setString(1,student_name);
 		preparedStatement.setFloat(2, score);
 		preparedStatement.setString(3, name);
 		
 		return preparedStatement.execute();
 		
-		
-		
 	}
+	
 	public ArrayList getStudentyId(int id) throws SQLException {
 		PreparedStatement preparedStatement = this.con.prepareStatement(GET_ID_STUDENT);
 		preparedStatement.setInt(1, id);
@@ -83,6 +82,9 @@ Connection con;
 		ResultSet resultSet = preparedStatement.executeQuery();
 		return resultSet;
 	}
+	
+	
+
 	
 }
 

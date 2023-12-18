@@ -1,0 +1,100 @@
+package com.fresco.jdbc.code;
+
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.fresco.jdbc.code.util.DbUtil;
+
+public class DbOperations {
+	Connection con;
+	
+	public static final String INSERT_SUBJECT = "INSERT INTO subject(name)VALUES(?)";
+	public static final String GET_ID_SUBJECT = "SELECT id,name FROM subject WHERE id =?";
+	public static final String GET_ALL_SUBJECT = "SELECT id,name FROM subject";
+	public static final String INSERT_STUDENT = "INSERT INTO Student(name,score,id) VALUES(?,?,id)SELECT id FROM subject WHERE name =\"?\"";
+	public static final String GET_ID_STUDENT = "SELECt is,student_name,score,subject_id FROM student WHERE id =?";
+	public static final String GET_ALL_STUDENT ="SELECT * FROM student";
+	
+	public DbOperations() {
+		this.con = DbUtil.getConnection();
+	}
+	public boolean insertSubject(String name) throws SQLException {
+		PreparedStatement preparedStatement = this.con.prepareStatement(INSERT_SUBJECT);
+		preparedStatement.setString(1, name);
+		return preparedStatement.execute();
+		
+	}
+	
+	public ArrayList getSubjectById(int id) throws SQLException {
+		PreparedStatement preparedStatement = this.con.prepareStatement(GET_ID_SUBJECT);
+		preparedStatement.setInt(1, id);
+		ResultSet resultSet = preparedStatement.executeQuery();
+		ArrayList arrayList = new ArrayList();
+		while(resultSet.next()) {
+			arrayList.add(resultSet.getInt("id"));
+			arrayList.add(resultSet.getString("name"));
+		}
+		return arrayList;
+	}
+	
+	public ResultSet getAllSubjects() throws SQLException {
+		PreparedStatement preparedStatement = this.con.prepareStatement(GET_ALL_SUBJECT);
+		ResultSet resultSet = preparedStatement.executeQuery();
+		return resultSet;
+	}
+	
+	public boolean insertStudent(String student_name, float score, String name) throws SQLException {
+		PreparedStatement preparedStatement = this.con.prepareStatement("INSERT INTO Student(name,score,id) VALUES(?,?,(SELECT id FROM subject WHERE name =?))");
+		preparedStatement.setString(1,student_name);
+		preparedStatement.setFloat(2, score);
+		preparedStatement.setString(3, name);
+		
+		return preparedStatement.execute();
+		
+		
+		
+	}
+	public ArrayList getStudentyId(int id) throws SQLException {
+		PreparedStatement preparedStatement = this.con.prepareStatement(GET_ID_STUDENT);
+		preparedStatement.setInt(1, id);
+		ArrayList arrayList = new ArrayList();
+		ResultSet resultSet = preparedStatement.executeQuery();
+		while(resultSet.next()) {
+			arrayList.add(resultSet.getInt("id"));
+			arrayList.add(resultSet.getString("student_name"));
+			arrayList.add(resultSet.getFloat("score"));
+			arrayList.add(resultSet.getInt("subject_id"));
+			
+		}
+	   return arrayList;
+	}
+	public ResultSet getAllStudents() throws SQLException {
+		PreparedStatement preparedStatement = this.con.prepareStatement(GET_ALL_STUDENT);
+		
+		ResultSet resultSet = preparedStatement.executeQuery();
+		return resultSet;
+	}
+}
+
+
+
+
+
+
+
+public class RunningScripts {
+   public void runDbScript() throws Exception {
+
+      ScriptRunner sr = new ScriptRunner(DbUtil.getConnection());
+      Reader reader = new BufferedReader(new FileReader("./db.sql"));
+      sr.runScript(reader);
+      
+      
+   }
+}
